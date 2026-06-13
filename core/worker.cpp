@@ -22,7 +22,11 @@ void worker_thread_fn(Client *client, Workload *workload, OpMeasurement *measure
 		if (measurement->finished) {
 			break;
 		}
-		workload->next_op(&op);
+		try {
+			workload->next_op(&op);
+		} catch (const std::invalid_argument &) {
+			break;
+		}
 
 		if (std::chrono::steady_clock::now() < next_op_time) {
 			std::this_thread::sleep_until(next_op_time);
